@@ -7,6 +7,11 @@ using Orleans.Storage;
 
 namespace Orleans.StorageProvider.CloudServiceWrapper
 {
+  /// <summary>
+  /// Wraps a IStorageProvider. The wrapper is able to pull settings from the RoleEnvironment and supply them to the wrapped provider.
+  /// This makes it possible to put configuration like connectionstrings in the Azure Cloud Service configuration.
+  /// </summary>
+  /// <typeparam name="T"></typeparam>
   public abstract class CloudServiceStorageProvider<T> : IStorageProvider where T : IStorageProvider, new()
   {
     private const string _serviceConfigurationSettingPrefix = "ServiceConfigurationSetting:";
@@ -38,9 +43,12 @@ namespace Orleans.StorageProvider.CloudServiceWrapper
       await _storageProvider.WriteStateAsync(grainType, grainReference, grainState);
     }
 
+    /// <summary>
+    /// Substitutes values that start with the special prefix with values from the RoleEnvironment.
+    /// </summary>
     public async Task Init(string name, IProviderRuntime providerRuntime, IProviderConfiguration config)
     {
-      Dictionary<string, string> properties = new Dictionary<string, string>();
+      var properties = new Dictionary<string, string>();
 
       foreach(var configProperty in config.Properties)
       {
