@@ -28,7 +28,7 @@ namespace Orleans.StorageProvider.CloudServiceWrapper
       await _storageProvider.Close();
     }
 
-    public OrleansLogger Log
+    public Logger Log
     {
       get { return _storageProvider.Log; }
     }
